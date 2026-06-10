@@ -1,0 +1,109 @@
+erDiagram
+  users {
+    uuid id PK
+    string name
+    string email
+    enum role 
+    "admin 
+    observer"
+    string image_url
+    timestamp created_at
+    timestamp updated_at
+  }
+
+  devices {
+    uuid id PK
+    string name
+    string location
+    timestamp created_at
+  }
+
+  plants {
+    uuid id PK
+    uuid device_id FK 
+    string name
+    string species
+    boolean is_active
+    date planted_at
+    timestamp created_at
+    timestamp updated_at
+    
+  }
+
+  daily_logs {
+        uuid id PK
+        uuid device_id FK
+        date log_date
+        int reading_count
+        float avg_temperature
+        float avg_humidity
+        float min_temperature
+        float max_temperature
+        float min_humidity
+        float max_humidity
+        boolean pump_activated
+        timestamp created_at
+        timestamp updated_at
+  }
+
+  sensor_readings {
+    uuid id PK
+    uuid daily_log_id FK
+    float temperature
+    float humidity
+    int soil_moisture_s1
+    int soil_moisture_s2
+    int soil_moisture_s3
+    boolean pump_status
+    string device_status
+    timestamp recorded_at
+  }
+
+  plant_photos {
+    uuid id PK
+    uuid plant_id FK
+    uuid daily_log_id FK
+    uuid taken_by FK
+    date photo_date
+    string image_url
+    timestamp uploaded_at
+    string notes
+  }
+
+  plant_growth_logs {
+    uuid id PK
+    uuid plant_id FK
+    uuid daily_log_id FK
+    uuid recorded_by FK
+    float height_cm
+    enum health_status 
+    "healthy
+  wilting
+  diseased
+  recovering"
+    string observations
+    timestamp created_at
+  }
+
+  system_logs {
+    uuid id PK
+    uuid device_id FK
+    string log_type
+    string message
+    enum severity 
+    "info
+    warning
+    error"
+    timestamp occurred_at
+  }
+
+  devices ||--o{ plants : "has"
+  devices ||--o{ daily_logs : "generates"
+  devices ||--o{ system_logs : "reports"
+  daily_logs ||--o{ sensor_readings : "groups"
+  daily_logs ||--o{ plant_photos : "dated by"
+  daily_logs ||--o{ plant_growth_logs : "dated by"
+  plants ||--o{ plant_photos : "has"
+  plants ||--o{ plant_growth_logs : "tracks"
+  users ||--o{ plant_photos : "takes"
+  users ||--o{ plant_growth_logs : "records"
